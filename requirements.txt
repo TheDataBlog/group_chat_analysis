@@ -1,0 +1,6 @@
+streamlit==1.53.1
+pandas
+numpy
+matplotlib
+altair
+seaborn
