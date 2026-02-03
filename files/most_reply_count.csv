@@ -1,0 +1,15 @@
+,person,replied_to,count
+0,User_1,User_8,7
+1,User_10,User_12,290
+2,User_11,User_13,51
+3,User_12,User_10,250
+4,User_13,User_12,123
+5,User_14,User_3,35
+6,User_2,User_12,14
+7,User_3,User_8,70
+8,User_4,User_8,34
+9,User_5,User_13,47
+10,User_6,User_10,128
+11,User_7,User_13,11
+12,User_8,User_10,232
+13,User_9,User_8,38
