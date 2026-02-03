@@ -2,21 +2,30 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import altair as alt
+import json
 
 st.set_page_config(page_title='chat analysis', layout='wide')
 
-json_file = st.file_uploader(
-    label='Enter the JSON file here',
-    type='json'
-)
+json_file = 'result.json'
 
 if json_file is not None:
     df = pd.read_json(json_file)
 
     df_messages = pd.json_normalize(df['messages'])
     messages = df_messages[df_messages['type'] == 'message'].copy()
-
     messages = messages.rename(columns={'from': 'person'})
+
+
+    people_sorted = sorted(messages['person'].dropna().unique())
+
+    user_map = {
+        name: f'User_{i}'
+        for i, name in enumerate(people_sorted, start=1)
+    }
+
+
+    messages['person'] = messages['person'].map(user_map)
+
     messages['date'] = pd.to_datetime(messages['date'])
 
     per_person_sum = messages['person'].value_counts()
@@ -134,3 +143,19 @@ if json_file is not None:
     )
 
     st.altair_chart(chart + labels, use_container_width=True)
+
+    replyed_messages = messages[~messages['person_replied'].isna()]
+    reply_count = pd.DataFrame(replyed_messages.groupby(by=['person', 'person_replied']).agg(count=('person_replied','count')))
+    reply_count = reply_count.reset_index()
+    most_reply_count = (
+    reply_count.loc[reply_count.groupby('person')['count'].idxmax()]
+         .reset_index(drop=True)
+    )
+    most_reply_count = most_reply_count.rename(columns={'person_replied': 'replied_to'})
+
+    st.dataframe(most_reply_count[['person', 'replied_to', 'count']].rename(columns={
+        'person': 'Person',
+        'replied_to': 'Replied To',
+        'count': 'Number of Replies'
+    }))
+
