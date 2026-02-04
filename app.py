@@ -6,6 +6,12 @@ import json
 
 st.set_page_config(page_title='chat analysis', layout='wide')
 
+st.info(
+    "ℹ️ Note: This app analyzes group chat communication patterns. "
+    "All user identifiers and personal information have been anonymized "
+    "to ensure privacy and responsible data handling."
+)
+
 per_person_sum = pd.read_csv('files/per_person_sum.csv')
 
 # Make sure columns are named correctly
