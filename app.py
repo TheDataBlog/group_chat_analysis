@@ -83,12 +83,22 @@ st.altair_chart(chart2, use_container_width=True)
 
 replied_per_person = pd.read_csv('files/replied_per_person.csv')
 
-# Chart for percentage of messages ignored
-chart = (
+sort_order = alt.SortField(field="ignored", order="descending")
+
+# Bars
+
+
+# Show a warning if missing messages affect results
+st.warning(
+    "⚠️ Some users have missing chat history due to deleted messages. "
+    "This may cause the 'gets ignored' metric to appear higher than actual."
+)
+
+bars = (
     alt.Chart(replied_per_person)
     .mark_bar()
     .encode(
-        x=alt.X('person:N', sort='-y', title='Person'),
+        x=alt.X('person:N', sort=sort_order, title='Person'),
         y=alt.Y('ignored:Q', title='Percentage'),
         tooltip=[
             alt.Tooltip('person:N', title='Person'),
@@ -97,21 +107,24 @@ chart = (
         color=alt.Color('ignored:Q', scale=alt.Scale(scheme='reds'))
     )
     .properties(
-        title='Percentage of Messages Ignored for Each Person',
+        title='Who gets ignored the most',
         height=700
     )
 )
 
-# Add labels above bars
+# Labels (IMPORTANT: same sort)
 labels = (
     alt.Chart(replied_per_person)
     .mark_text(dy=-5)
     .encode(
-        x='person:N',
+        x=alt.X('person:N', sort=sort_order),
         y='ignored:Q',
         text=alt.Text('ignored:Q', format='.1f')
     )
 )
+
+chart = bars + labels
+
 
 st.altair_chart(chart + labels, use_container_width=True)
 most_reply_count = pd.read_csv('files/most_reply_count.csv')
